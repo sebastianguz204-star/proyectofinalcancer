@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BreastAI — Diagnóstico Predictivo</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Breast<span>AI</span></div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-view="view-home" onclick="showView('view-home')">Inicio</button>
+    <button class="nav-tab" data-view="view-individual" onclick="showView('view-individual')">Predicción Individual</button>
+    <button class="nav-tab" data-view="view-batch" onclick="showView('view-batch')">Predicción por Lotes</button>
+  </div>
+  <div class="nav-badge">UCI Dataset</div>
+</nav>
+
+<!-- ========== HOME ========== -->
+<div id="view-home" class="view active">
+  <div class="hero">
+    <div class="hero-tag">🔬 Machine Learning · Oncología</div>
+    <h1>Clasificación de <em>Cáncer de Mama</em><br>con IA</h1>
+    <p>Dos modelos de aprendizaje automático entrenados con el dataset Breast Cancer Wisconsin de UCI para predecir si un tumor es benigno o maligno.</p>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-pill">
+      <div class="num" id="stat-lr">97.37%</div>
+      <div class="lbl">Accuracy LR</div>
+    </div>
+    <div class="stat-pill">
+      <div class="num" id="stat-nn">97.37%</div>
+      <div class="lbl">Accuracy NN</div>
+    </div>
+    <div class="stat-pill">
+      <div class="num" id="stat-feat">30</div>
+      <div class="lbl">Features</div>
+    </div>
+    <div class="stat-pill">
+      <div class="num" id="stat-samples">114</div>
+      <div class="lbl">Casos Test</div>
+    </div>
+    <div class="stat-pill">
+      <div class="num">569</div>
+      <div class="lbl">Total Muestras</div>
+    </div>
+  </div>
+
+  <!-- Model Cards -->
+  <div class="section-title"><span class="dot"></span> Modelos Entrenados</div>
+  <div class="model-cards">
+    <div class="model-card selected" id="card-lr" onclick="selectModel('lr')">
+      <div class="mc-icon">📈</div>
+      <div class="mc-title">Regresión Logística</div>
+      <div class="mc-desc">Modelo lineal interpretable que estima la probabilidad de malignidad usando una función sigmoide sobre las 30 características.</div>
+      <div class="mc-acc">
+        <div class="mc-acc-bar"><div class="mc-acc-fill" id="lr-acc-bar" style="width:97.37%"></div></div>
+        <span class="mc-acc-num" id="lr-acc-num">97.37%</span>
+      </div>
+    </div>
+    <div class="model-card" id="card-nn" onclick="selectModel('nn')">
+      <div class="mc-icon">🧠</div>
+      <div class="mc-title">Red Neuronal (MLP)</div>
+      <div class="mc-desc">Perceptrón multicapa con capas ocultas [64, 32] y activación ReLU, capturando relaciones no lineales entre biomarcadores.</div>
+      <div class="mc-acc">
+        <div class="mc-acc-bar"><div class="mc-acc-fill" id="nn-acc-bar" style="width:97.37%"></div></div>
+        <span class="mc-acc-num" id="nn-acc-num">97.37%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dataset info -->
+  <div class="divider"></div>
+  <div class="section-title"><span class="dot"></span> Sobre el Dataset</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:2rem;">
+    <div class="metric-card">
+      <div class="m-val">569</div>
+      <div class="m-lbl">Muestras Totales</div>
+    </div>
+    <div class="metric-card">
+      <div class="m-val">30</div>
+      <div class="m-lbl">Características</div>
+    </div>
+    <div class="metric-card">
+      <div class="m-val">2</div>
+      <div class="m-lbl">Clases</div>
+    </div>
+  </div>
+
+  <div class="info-box">
+    📌 <strong>Breast Cancer Wisconsin (Diagnostic)</strong> — Fuente: <a href="https://archive.ics.uci.edu/dataset/17/breast+cancer+wisconsin+diagnostic" style="color:var(--teal);" target="_blank">UCI Machine Learning Repository</a>. Las características se calculan a partir de imágenes digitalizadas de biopsias FNA e incluyen métricas del núcleo celular como radio, textura, perímetro, área, suavidad, compacidad, concavidad, simetría y dimensión fractal.
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="showView('view-individual')">
+      <span>⚡</span> Predicción Individual
+    </button>
+    <button class="btn btn-teal" onclick="showView('view-batch')">
+      <span>📊</span> Predicción por Lotes
+    </button>
+  </div>
+</div>
+
+<!-- ========== INDIVIDUAL ========== -->
+<div id="view-individual" class="view">
+  <div class="section-title"><span class="dot"></span> Predicción Individual</div>
+
+  <div class="info-box">
+    💡 Ingresa los valores de los 30 biomarcadores celulares del tumor. Puedes cargar una muestra de ejemplo para empezar rápidamente.
+  </div>
+
+  <!-- Model selector -->
+  <div style="margin-bottom:1rem;">
+    <div style="font-size:0.85rem;color:var(--gray);margin-bottom:0.7rem;font-weight:500;">Modelo a usar:</div>
+    <div class="inner-tabs">
+      <button class="inner-tab active" onclick="selectModelTab(this,'lr')">📈 Regresión Logística</button>
+      <button class="inner-tab" onclick="selectModelTab(this,'nn')">🧠 Red Neuronal</button>
+    </div>
+  </div>
+
+  <!-- Sample buttons -->
+  <div class="sample-grid">
+    <div style="font-size:0.82rem;color:var(--gray);align-self:center;">Cargar ejemplo:</div>
+    <button class="sample-btn" onclick="loadSample('benign')">✅ Muestra Benigna</button>
+    <button class="sample-btn" onclick="loadSample('malignant')">⚠️ Muestra Maligna</button>
+  </div>
+
+  <!-- Feature inputs -->
+  <div class="section-title" style="font-size:1rem;margin-bottom:1rem;"><span class="dot"></span> Características del Tumor</div>
+  <div class="feature-grid" id="feature-grid">
+    <!-- built by JS -->
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="runIndividualPrediction()">
+      <span>🔍</span> Analizar Tumor
+    </button>
+    <button class="btn btn-outline" onclick="clearFeatures()">
+      Limpiar
+    </button>
+  </div>
+
+  <!-- Result -->
+  <div class="result-card" id="individual-result">
+    <div class="result-big">
+      <div style="font-size:3rem;" id="res-icon">🔬</div>
+      <div>
+        <div class="result-verdict benign" id="res-verdict">Benigno</div>
+        <div class="result-prob">Confianza: <strong id="res-prob">0</strong>% · Modelo: <strong id="res-model">—</strong></div>
+      </div>
+    </div>
+    <div class="prob-bar">
+      <div class="prob-fill benign" id="res-prob-bar" style="width:0%"></div>
+    </div>
+    <div style="font-size:0.82rem;color:var(--gray);margin-top:0.5rem;">
+      ⚠️ Esta herramienta es solo para fines educativos. No sustituye diagnóstico médico profesional.
+    </div>
+  </div>
+</div>
+
+<!-- ========== BATCH ========== -->
+<div id="view-batch" class="view">
+  <div class="section-title"><span class="dot"></span> Predicción por Lotes</div>
+
+  <div class="info-box">
+    📋 Sube un archivo CSV con los 30 valores de las características por fila, o usa los datos de prueba del modelo para ver la matriz de confusión y métricas de desempeño.
+  </div>
+
+  <!-- Model selector -->
+  <div style="margin-bottom:1.5rem;">
+    <div style="font-size:0.85rem;color:var(--gray);margin-bottom:0.7rem;font-weight:500;">Modelo a usar:</div>
+    <div class="inner-tabs">
+      <button class="inner-tab active" onclick="selectModelTabBatch(this,'lr')">📈 Regresión Logística</button>
+      <button class="inner-tab" onclick="selectModelTabBatch(this,'nn')">🧠 Red Neuronal</button>
+    </div>
+  </div>
+
+  <!-- Upload zone -->
+  <div class="upload-zone" id="upload-zone">
+    <div class="upload-icon">📂</div>
+    <div class="upload-title">Arrastra tu CSV aquí</div>
+    <div class="upload-sub">o haz clic para seleccionar archivo · formato: 30 columnas numéricas</div>
+    <input type="file" id="file-input" accept=".csv">
+  </div>
+
+  <div style="text-align:center;margin:-0.5rem 0 1.5rem;color:var(--gray);font-size:0.85rem;">— o —</div>
+
+  <div class="actions" style="justify-content:center;margin-bottom:2rem;">
+    <button class="btn btn-primary" onclick="useDemoData()">
+      <span>🧪</span> Usar Datos de Prueba del Modelo (20 muestras)
+    </button>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-bar" style="display:none;">
+    <div class="progress-fill" id="batch-progress"></div>
+  </div>
+
+  <!-- Results -->
+  <div id="batch-results" style="display:none;">
+    <div class="section-title"><span class="dot"></span> Resultados</div>
+
+    <!-- Table -->
+    <div class="data-table-wrap" style="margin-bottom:2rem;">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Predicción</th>
+            <th>Confianza</th>
+            <th>Real</th>
+            <th>Correcto</th>
+          </tr>
+        </thead>
+        <tbody id="batch-tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="actions" style="margin-bottom:2rem;">
+      <button class="btn btn-teal" onclick="downloadResults()">
+        <span>⬇️</span> Descargar CSV
+      </button>
+    </div>
+
+    <!-- Confusion Matrix & Metrics -->
+    <div id="matrix-section" style="display:none;">
+      <div class="divider"></div>
+      <div class="section-title"><span class="dot"></span> Matriz de Confusión</div>
+
+      <div style="margin-bottom:0.7rem;text-align:center;">
+        <div style="font-size:0.8rem;color:var(--gray);margin-bottom:0.5rem;">Predicho →</div>
+        <div class="cm-labels">
+          <div class="cm-label" style="color:var(--teal);">Maligno</div>
+          <div class="cm-label" style="color:var(--teal);">Benigno</div>
+        </div>
+      </div>
+      <div class="cm-grid">
+        <div class="cm-cell cm-tn">
+          <div class="cm-num" id="cm-tn">—</div>
+          <div class="cm-lbl">Verdadero Negativo</div>
+        </div>
+        <div class="cm-cell cm-fp">
+          <div class="cm-num" id="cm-fp">—</div>
+          <div class="cm-lbl">Falso Positivo</div>
+        </div>
+        <div class="cm-cell cm-fn">
+          <div class="cm-num" id="cm-fn">—</div>
+          <div class="cm-lbl">Falso Negativo</div>
+        </div>
+        <div class="cm-cell cm-tp">
+          <div class="cm-num" id="cm-tp">—</div>
+          <div class="cm-lbl">Verdadero Positivo</div>
+        </div>
+      </div>
+
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="m-val" id="m-acc">—</div>
+          <div class="m-lbl">Accuracy</div>
+        </div>
+        <div class="metric-card">
+          <div class="m-val" id="m-prec">—</div>
+          <div class="m-lbl">Precisión</div>
+        </div>
+        <div class="metric-card">
+          <div class="m-val" id="m-rec">—</div>
+          <div class="m-lbl">Recall (Sensibilidad)</div>
+        </div>
+        <div class="metric-card">
+          <div class="m-val" id="m-f1">—</div>
+          <div class="m-lbl">F1-Score</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+function selectModelTab(btn, model) {
+  document.querySelectorAll('#view-individual .inner-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  selectModel(model);
+}
+function selectModelTabBatch(btn, model) {
+  document.querySelectorAll('#view-batch .inner-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  selectModel(model);
+}
+function clearFeatures() {
+  MODEL && MODEL.feature_names.forEach((_, i) => {
+    const el = document.getElementById('feat-' + i);
+    if (el) el.value = 0;
+  });
+  document.getElementById('individual-result').classList.remove('show');
+}
+</script>
+</body>
+</html>
